@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>한·몽 번역기</title>
+<meta name="description" content="한국어 ↔ 몽골어 무료 번역기. 몽골어 영어발음(채팅 줄임말)을 키릴 문자로 자동 복원해 번역합니다.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="한·몽 번역">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f3f6fc" media="(prefers-color-scheme: light)">
+<link rel="icon" id="faviconLink" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" id="appleIconLink" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3C/svg%3E">
+<link rel="manifest" id="manifestLink">
+<style>
+  :root{
+    --bg:#f3f6fc; --bg2:#e8eefb; --card:#ffffff; --card2:#f7f9fe;
+    --text:#0f172a; --muted:#64748b; --line:#e2e8f0;
+    --primary:#2563eb; --primary2:#3b82f6; --primary-soft:#e8f0ff;
+    --accent:#f59e0b; --ok:#10b981; --danger:#ef4444;
+    --shadow:0 10px 30px rgba(15,23,42,.08), 0 2px 6px rgba(15,23,42,.04);
+    --radius:20px;
+  }
+  html[data-theme="dark"]{
+    --bg:#0b1220; --bg2:#0f1a2e; --card:#121c2e; --card2:#0f1929;
+    --text:#e8eefb; --muted:#93a4bf; --line:#22304a;
+    --primary:#3b82f6; --primary2:#60a5fa; --primary-soft:#16243c;
+    --accent:#fbbf24; --ok:#34d399; --danger:#f87171;
+    --shadow:0 12px 34px rgba(0,0,0,.45), 0 2px 8px rgba(0,0,0,.3);
+  }
+  @media (prefers-color-scheme: dark){
+    html[data-theme="auto"]{
+      --bg:#0b1220; --bg2:#0f1a2e; --card:#121c2e; --card2:#0f1929;
+      --text:#e8eefb; --muted:#93a4bf; --line:#22304a;
+      --primary:#3b82f6; --primary2:#60a5fa; --primary-soft:#16243c;
+      --accent:#fbbf24; --ok:#34d399; --danger:#f87171;
+      --shadow:0 12px 34px rgba(0,0,0,.45), 0 2px 8px rgba(0,0,0,.3);
+    }
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Malgun Gothic","Noto Sans KR","Noto Sans",system-ui,"Segoe UI",Roboto,sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(1200px 600px at 110% -10%, rgba(37,99,235,.16), transparent 60%),
+      radial-gradient(900px 500px at -20% 10%, rgba(245,158,11,.12), transparent 55%),
+      linear-gradient(180deg,var(--bg) 0%, var(--bg2) 100%);
+    background-attachment:fixed;
+    -webkit-font-smoothing:antialiased;
+    font-size:16px;
+  }
+  .app{
+    max-width:520px; margin:0 auto; min-height:100%;
+    padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 28px);
+    display:flex; flex-direction:column; gap:14px;
+  }
+  /* header */
+  header{display:flex; align-items:center; gap:10px; padding:2px 2px 0}
+  .logo{
+    width:40px;height:40px;border-radius:13px;flex:0 0 auto;
+    background:linear-gradient(145deg,var(--primary2),var(--primary));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:15px;letter-spacing:-.5px;
+    box-shadow:0 6px 16px rgba(37,99,235,.35);
+  }
+  .titles{flex:1;min-width:0}
+  .titles h1{margin:0;font-size:18px;letter-spacing:-.3px;font-weight:800}
+  .titles p{margin:1px 0 0;font-size:11.5px;color:var(--muted);letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .icon-btn{
+    width:38px;height:38px;border-radius:12px;border:1px solid var(--line);
+    background:var(--card);color:var(--text);display:grid;place-items:center;
+    font-size:16px;cursor:pointer;transition:transform .12s ease, background .2s;
+  }
+  .icon-btn:active{transform:scale(.94)}
+  .icon-btn svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+  /* card */
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:14px;
+  }
+  .card-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .card-label{font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:.02em}
+  .badge{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;
+    background:var(--primary-soft);color:var(--primary);
+    border:1px solid rgba(37,99,235,.18); white-space:nowrap;
+  }
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+  .badge.ko{background:rgba(16,185,129,.12);color:var(--ok);border-color:rgba(16,185,129,.22)}
+  .badge.lat{background:rgba(245,158,11,.14);color:#b45309;border-color:rgba(245,158,11,.28)}
+  html[data-theme="dark"] .badge.lat{color:var(--accent)}
+  .badge.auto{background:transparent;color:var(--muted);border-color:var(--line)}
+  .badge[hidden]{display:none !important}
+  .count{margin-left:auto;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  textarea#srcText{
+    width:100%;min-height:104px;max-height:220px;resize:none;border:0;outline:0;background:transparent;
+    color:var(--text);font:inherit;font-size:19px;line-height:1.45;letter-spacing:-.2px;
+    padding:2px 0 0;
+  }
+  textarea#srcText::placeholder{color:var(--muted);opacity:.75;font-size:17px}
+  .src-actions{display:flex;align-items:center;gap:8px;padding-top:8px;border-top:1px dashed var(--line);margin-top:6px}
+  .ghost-btn{
+    border:1px solid var(--line);background:var(--card2);color:var(--muted);
+    font:inherit;font-size:12px;font-weight:600;padding:7px 11px;border-radius:10px;cursor:pointer;
+    display:inline-flex;align-items:center;gap:5px;
+  }
+  .ghost-btn:active{transform:scale(.97)}
+  .ghost-btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .ghost-btn.right{margin-left:auto}
+  /* direction */
+  .dir-row{display:flex;align-items:center;gap:8px;margin-top:12px}
+  .lang-pill{
+    flex:1;text-align:center;font-size:13px;font-weight:700;padding:9px 8px;border-radius:12px;
+    background:var(--card2);border:1px solid var(--line);color:var(--text);white-space:nowrap;
+  }
+  .lang-pill small{display:block;font-size:9.5px;font-weight:600;color:var(--muted);margin-top:1px}
+  .swap{
+    width:40px;height:40px;flex:0 0 auto;border-radius:50%;border:1px solid var(--line);
+    background:var(--card);color:var(--primary);display:grid;place-items:center;cursor:pointer;
+    box-shadow:0 2px 8px rgba(15,23,42,.08);transition:transform .18s ease;
+  }
+  .swap:active{transform:rotate(180deg) scale(.94)}
+  .swap svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  /* translate button */
+  .go{
+    width:100%;border:0;border-radius:16px;padding:16px;margin-top:12px;
+    font:inherit;font-size:16.5px;font-weight:800;letter-spacing:-.2px;color:#fff;cursor:pointer;
+    background:linear-gradient(135deg,var(--primary2),var(--primary));
+    box-shadow:0 10px 24px rgba(37,99,235,.32);
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    transition:transform .12s ease, opacity .2s;
+  }
+  .go:active{transform:scale(.985)}
+  .go[disabled]{opacity:.62;cursor:default}
+  .go svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+  .spinner{
+    width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.45);
+    border-top-color:#fff;animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  /* result */
+  #resultCard{display:none}
+  #resultCard.show{display:block;animation:pop .22s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .result-main{font-size:22px;line-height:1.42;font-weight:700;letter-spacing:-.3px;white-space:pre-wrap;word-break:break-word}
+  .result-main.cyr{font-size:22.5px;font-weight:600;letter-spacing:-.2px}
+  .pron{
+    margin-top:12px;border-top:1px dashed var(--line);padding-top:11px;
+    display:flex;flex-direction:column;gap:9px;
+  }
+  .pron-row{display:flex;align-items:flex-start;gap:9px}
+  .pron-key{
+    flex:0 0 auto;font-size:10.5px;font-weight:800;color:var(--muted);letter-spacing:.02em;
+    padding:3px 7px;border-radius:7px;background:var(--card2);border:1px solid var(--line);margin-top:2px;
+  }
+  .pron-val{flex:1;font-size:15px;line-height:1.5;word-break:break-word;letter-spacing:-.1px}
+  .pron-val.mono{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:14px}
+  .pron-val.restored{font-weight:700;color:var(--primary)}
+  .mini-copy{
+    flex:0 0 auto;border:1px solid var(--line);background:var(--card2);color:var(--muted);
+    width:30px;height:30px;border-radius:9px;display:grid;place-items:center;cursor:pointer;
+  }
+  .mini-copy:active{transform:scale(.92)}
+  .mini-copy svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .result-foot{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .engine-tag{font-size:10.5px;color:var(--muted);display:inline-flex;align-items:center;gap:4px}
+  .engine-tag i{width:5px;height:5px;border-radius:50%;background:var(--ok);display:inline-block}
+  .warn{
+    margin-top:10px;font-size:12px;color:#b45309;background:rgba(245,158,11,.12);
+    border:1px solid rgba(245,158,11,.28);padding:9px 11px;border-radius:11px;line-height:1.45;display:none;
+  }
+  .warn.show{display:block}
+  html[data-theme="dark"] .warn{color:var(--accent)}
+  /* chips */
+  .chips-title{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;color:var(--muted);margin:0 0 9px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{
+    border:1px solid var(--line);background:var(--card2);color:var(--text);
+    font:inherit;font-size:12.5px;font-weight:600;padding:8px 11px;border-radius:11px;cursor:pointer;
+    letter-spacing:-.1px;
+  }
+  .chip:active{transform:scale(.96);background:var(--primary-soft)}
+  .chip .sub{display:block;font-size:10px;font-weight:600;color:var(--muted);margin-top:1px}
+  /* history */
+  #historyCard{display:none}
+  #historyCard.show{display:block}
+  .hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+  .hist li{
+    display:flex;gap:10px;align-items:flex-start;padding:10px 6px;border-radius:11px;cursor:pointer;
+    border-bottom:1px solid var(--line);
+  }
+  .hist li:last-child{border-bottom:0}
+  .hist li:active{background:var(--card2)}
+  .hist .dir{font-size:10px;font-weight:800;color:var(--primary);background:var(--primary-soft);
+    padding:3px 6px;border-radius:6px;flex:0 0 auto;margin-top:2px}
+  .hist .txt{min-width:0;flex:1}
+  .hist .from{font-size:13.5px;font-weight:600;line-height:1.35;word-break:break-word}
+  .hist .to{font-size:12px;color:var(--muted);line-height:1.4;margin-top:2px;word-break:break-word}
+  /* sheet */
+  .overlay{
+    position:fixed;inset:0;background:rgba(8,12,22,.5);backdrop-filter:blur(3px);
+    opacity:0;pointer-events:none;transition:opacity .2s;z-index:40;
+  }
+  .overlay.show{opacity:1;pointer-events:auto}
+  .sheet{
+    position:fixed;left:0;right:0;bottom:0;z-index:41;
+    background:var(--card);border-radius:24px 24px 0 0;border-top:1px solid var(--line);
+    padding:10px 18px calc(env(safe-area-inset-bottom) + 22px);
+    transform:translateY(102%);transition:transform .26s cubic-bezier(.22,.7,.2,1);
+    max-height:86vh;overflow:auto;max-width:520px;margin:0 auto;
+    box-shadow:0 -12px 40px rgba(0,0,0,.25);
+  }
+  .sheet.show{transform:translateY(0)}
+  .grab{width:38px;height:4px;border-radius:99px;background:var(--line);margin:2px auto 12px}
+  .sheet h2{margin:0 0 4px;font-size:16px;letter-spacing:-.2px}
+  .sheet .hint{font-size:11.5px;color:var(--muted);line-height:1.5;margin:0 0 14px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}
+  .field input[type=text],.field input[type=password],.field select{
+    width:100%;padding:12px 13px;border-radius:12px;border:1px solid var(--line);
+    background:var(--card2);color:var(--text);font:inherit;font-size:14px;outline:none;
+  }
+  .field input:focus,.field select:focus{border-color:var(--primary)}
+  .switch-row{display:flex;align-items:center;gap:10px;padding:11px 0}
+  .switch-row .lbl{flex:1;font-size:13px;font-weight:600}
+  .switch-row .lbl small{display:block;font-weight:500;color:var(--muted);font-size:11px;margin-top:2px;line-height:1.4}
+  .switch{position:relative;width:46px;height:27px;flex:0 0 auto}
+  .switch input{opacity:0;width:0;height:0;position:absolute}
+  .switch span{
+    position:absolute;inset:0;border-radius:99px;background:var(--line);transition:background .2s;cursor:pointer;
+  }
+  .switch span::after{
+    content:"";position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;
+    background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.25);
+  }
+  .switch input:checked + span{background:var(--primary)}
+  .switch input:checked + span::after{transform:translateX(19px)}
+  .sheet-actions{display:flex;gap:8px;margin-top:6px}
+  .btn-primary{
+    flex:1;border:0;border-radius:13px;padding:14px;color:#fff;font:inherit;font-weight:800;font-size:14.5px;
+    background:linear-gradient(135deg,var(--primary2),var(--primary));cursor:pointer;
+  }
+  .btn-ghost{
+    border:1px solid var(--line);background:var(--card2);color:var(--text);
+    border-radius:13px;padding:14px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;
+  }
+  .btn-danger{border:1px solid rgba(239,68,68,.35);background:rgba(239,68,68,.08);color:var(--danger);
+    border-radius:13px;padding:12px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;width:100%;margin-top:4px}
+  /* toast */
+  .toast{
+    position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 26px);transform:translate(-50%,16px);
+    background:rgba(15,23,42,.94);color:#fff;font-size:13px;font-weight:600;padding:11px 18px;border-radius:999px;
+    opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;z-index:60;max-width:86vw;text-align:center;
+    box-shadow:0 8px 24px rgba(0,0,0,.35);
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  footer{margin-top:2px;text-align:center;font-size:10.5px;color:var(--muted);line-height:1.6;padding-bottom:4px}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">한·몽</div>
+    <div class="titles">
+      <h1>한·몽 번역기</h1>
+      <p>몽골어 영어발음·채팅도 바로 번역</p>
+    </div>
+    <button class="icon-btn" id="btnTheme" aria-label="테마 변경" title="테마 변경">
+      <svg viewBox="0 0 24 24"><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/><circle cx="12" cy="12" r="4.2"/></svg>
+    </button>
+    <button class="icon-btn" id="btnSettings" aria-label="설정" title="설정">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </header>
+
+  <!-- 입력 -->
+  <section class="card">
+    <div class="card-head">
+      <span class="card-label">입력</span>
+      <span class="badge auto" id="langBadge"><span class="dot"></span><span id="langBadgeText">자동 감지</span></span>
+      <span class="count" id="charCount">0/1000</span>
+    </div>
+    <textarea id="srcText" maxlength="1000" placeholder="한국어 또는 몽골어를 입력하세요&#10;예) sain bainuu, hairtai shu"></textarea>
+    <div class="src-actions">
+      <button class="ghost-btn" id="btnSpeakSrc">
+        <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>듣기
+      </button>
+      <button class="ghost-btn" id="btnPaste">붙여넣기</button>
+      <button class="ghost-btn right" id="btnClear">지우기</button>
+    </div>
+    <div class="dir-row">
+      <div class="lang-pill" id="pillLeft">한국어<small>Korean</small></div>
+      <button class="swap" id="btnSwap" aria-label="방향 전환">
+        <svg viewBox="0 0 24 24"><path d="M7 4 3 8l4 4"/><path d="M3 8h13a5 5 0 0 1 0 10h-2"/><path d="M17 20l4-4-4-4"/></svg>
+      </button>
+      <div class="lang-pill" id="pillRight">몽골어<small>Mongolian</small></div>
+    </div>
+    <button class="go" id="btnTranslate">
+      <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+      <span id="goLabel">번역하기</span>
+    </button>
+  </section>
+
+  <!-- 결과 -->
+  <section class="card" id="resultCard">
+    <div class="card-head">
+      <span class="card-label" id="resultLabel">번역 결과</span>
+      <span class="badge" id="resultBadge" hidden><span class="dot"></span><span id="resultBadgeText"></span></span>
+      <button class="mini-copy" id="btnSpeakResult" style="margin-left:auto" aria-label="결과 듣기">
+        <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+      </button>
+    </div>
+    <div class="result-main" id="resultText"></div>
+    <div class="pron" id="pronBlock"></div>
+    <div class="warn" id="warnBox"></div>
+    <div class="result-foot">
+      <span class="engine-tag"><i></i><span id="engineText">무료 번역</span></span>
+      <button class="ghost-btn right" id="btnCopyAll">전체 복사</button>
+    </div>
+  </section>
+
+  <!-- 빠른 회화 -->
+  <section class="card" id="quickCard">
+    <div class="chips-title">⚡ 자주 쓰는 회화 · 누르면 바로 번역</div>
+    <div class="chips" id="chipsKo"></div>
+    <div class="chips" id="chipsMn" style="margin-top:7px"></div>
+  </section>
+
+  <!-- 히스토리 -->
+  <section class="card" id="historyCard">
+    <div class="card-head">
+      <span class="card-label">최근 번역</span>
+      <button class="ghost-btn right" id="btnClearHistory">전체 삭제</button>
+    </div>
+    <ul class="hist" id="histList"></ul>
+  </section>
+
+  <footer>
+    무료 번역 엔진 · API 키 없이 동작<br>입력한 문장은 번역 서버로 전송, 최근 기록은 이 기기에만 저장
+  </footer>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- 설정 시트 -->
+<div class="sheet" id="settingsSheet" role="dialog" aria-modal="true" aria-label="설정">
+  <div class="grab"></div>
+  <h2>설정</h2>
+  <p class="hint">기본 모드는 API 키 없이 100% 무료로 동작합니다. Gemini 키를 넣으면 문맥·초축약 채팅체를 더 정확하게 번역하는 AI 정밀 모드를 쓸 수 있어요.<br>입력한 문장은 번역을 위해 무료 번역 서버(Google·MyMemory)로 전송됩니다.</p>
+
+  <div class="field">
+    <label for="geminiKey">Gemini API 키 <span style="color:var(--muted);font-weight:500">(선택)</span></label>
+    <input type="password" id="geminiKey" placeholder="AIza... (비워두면 무료 모드)" autocomplete="off" spellcheck="false">
+  </div>
+  <div class="switch-row">
+    <div class="lbl">AI 정밀 모드
+      <small>키가 있을 때만 사용됩니다. 실패하면 자동으로 무료 엔진으로 돌아갑니다.</small>
+    </div>
+    <label class="switch"><input type="checkbox" id="aiToggle"><span></span></label>
+  </div>
+  <div class="field" style="margin-top:6px">
+    <label for="themeSelect">화면 테마</label>
+    <select id="themeSelect">
+      <option value="auto">시스템 설정 따르기</option>
+      <option value="light">라이트</option>
+      <option value="dark">다크</option>
+    </select>
+  </div>
+  <div class="field">
+    <label for="engineSelect">번역 엔진</label>
+    <select id="engineSelect">
+      <option value="auto">자동 (가장 빠른 무료 엔진)</option>
+      <option value="google">Google 무료 번역</option>
+      <option value="mymemory">MyMemory</option>
+    </select>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn-ghost" id="btnCloseSettings" style="flex:0 0 34%">닫기</button>
+    <button class="btn-primary" id="btnSaveSettings">저장</button>
+  </div>
+  <button class="btn-danger" id="btnWipe">저장된 기록·설정 모두 삭제</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================
+   1. 저장소 (localStorage 안전 래퍼)
+   ========================================================= */
+var store = (function(){
+  var ok = true;
+  try { localStorage.setItem('__t','1'); localStorage.removeItem('__t'); } catch(e){ ok = false; }
+  var mem = {};
+  return {
+    get: function(k, d){
+      try { var v = ok ? localStorage.getItem(k) : mem[k]; return v == null ? d : JSON.parse(v); }
+      catch(e){ return d; }
+    },
+    set: function(k, v){
+      try { var s = JSON.stringify(v); if(ok) localStorage.setItem(k, s); else mem[k] = s; } catch(e){}
+    },
+    del: function(k){ try { if(ok) localStorage.removeItem(k); delete mem[k]; } catch(e){} }
+  };
+})();
+var KEY = { hist:'mnt.history.v1', key:'mnt.geminiKey', ai:'mnt.aiMode', theme:'mnt.theme', engine:'mnt.engine' };
+
+/* =========================================================
+   2. 언어 감지
+   ========================================================= */
+function detectLang(text){
+  var s = String(text || '');
+  var hangul = (s.match(/[\uAC00-\uD7A3\u1100-\u11FF]/g) || []).length;
+  var cyr = (s.match(/[\u0400-\u04FF]/g) || []).length;
+  var lat = (s.match(/[A-Za-z]/g) || []).length;
+  if (hangul === 0 && cyr === 0 && lat === 0) return 'unknown';
+  if (hangul > 0 && cyr === 0 && hangul * 3 >= lat) return 'ko';
+  if (hangul >= cyr && hangul >= lat) return 'ko';
+  if (cyr >= lat) return 'mn-cyr';
+  return 'mn-lat';
+}
+
+/* =========================================================
+   3. 로마자 몽골어 → 키릴 복원 엔진
+   ---------------------------------------------------------
+   · PHRASES : 여러 단어 채팅 표현 (우선 매칭)
+   · LEX     : 한 단어 채팅/로마자 어휘 사전
+   · 규칙    : 사전에 없는 단어는 자모 규칙 + 모음조화로 복원
+   ========================================================= */
+
+/* 3-1. 여러 단어 표현 (긴 것부터 매칭) */
+var PHRASES = [
+  // 인사·감사·사과
+  ['sain bainuu','Сайн байна уу'], ['sain bainu','Сайн байна уу'], ['sain bnuu','Сайн байна уу'],
+  ['sain bnu','Сайн байна уу'], ['sain bain uu','Сайн байна уу'], ['sain uu','Сайн байна уу'],
+  ['sn bnu','Сайн байна уу'], ['sn bain uu','Сайн байна уу'], ['sn uu','Сайн байна уу'],
+  ['sn bn uu','Сайн байна уу'], ['yu vee','Юу вэ'], ['yu ve','Юу вэ'], ['yaj bnu','Яаж байна уу'],
+  ['sain baina uu','Сайн байна уу'], ['ta sain bainuu','Та сайн байна уу'], ['ta sain uu','Та сайн байна уу'],
+  ['chi sain uu','Чи сайн уу'], ['chi sain bainuu','Чи сайн байна уу'],
+  ['bayar bayar','Баяр баяр'], ['bayarlalaa shu','Баярлалаа шүү'], ['bayrlalaa shu','Баярлалаа шүү'],
+  ['uuchlaarai shu','Уучлаарай шүү'],
+  // 안부
+  ['yaj baina','Яаж байна'], ['yaj bn','Яаж байна'], ['yaj bna','Яаж байна'], ['yaj bain','Яаж байна'],
+  ['yamar bn','Ямар байна'], ['yu baina','Юу байна'], ['yu bna','Юу байна'], ['yu bn','Юу байна'],
+  ['you bna','Юу байна'], ['yu bain','Юу байна'], ['yaj baina uu','Яаж байна уу'],
+  ['chi yaj bn','Чи яаж байна'], ['chi yaj bna','Чи яаж байна'], ['chi yaj baina','Чи яаж байна'],
+  ['ta yaj bn','Та яаж байна'], ['ta yaj baina','Та яаж байна'],
+  ['bi sain bn','Би сайн байна'], ['bi sain baina','Би сайн байна'], ['bi sain','Би сайн'],
+  ['bi goy bn','Би гоё байна'], ['bi saikhan bn','Би сайхан байна'],
+  // 몰라요·안 돼요
+  ['bi medku bn','Би мэдэхгүй байна'], ['bi medehgui bn','Би мэдэхгүй байна'],
+  ['bi medku bna','Би мэдэхгүй байна'], ['bi medhgui bn','Би мэдэхгүй байна'],
+  ['bi medhuu bn','Би мэдэхгүй байна'], ['bi mdku bn','Би мэдэхгүй байна'],
+  ['medku bn','Мэдэхгүй байна'], ['medehgui bn','Мэдэхгүй байна'],
+  ['bolku bn','Болохгүй байна'], ['bolohgui bn','Болохгүй байна'],
+  // 사랑·감정 (사용자 요청 핵심)
+  ['hairtai shu','Хайртай шүү'], ['hairtai shuu','Хайртай шүү'], ['hairtai shu uu','Хайртай шүү'],
+  ['bi chamd hairtai','Би чамд хайртай'], ['bi chamd hairtaishaa','Би чамд хайртай'],
+  ['bi chamd hairtai shu','Би чамд хайртай'], ['chamd hairtai','Чамд хайртай'],
+  ['tiim shu','Тийм шүү'], ['tiim shuu','Тийм шүү'], ['bolno shu','Болно шүү'],
+  ['baina shu','Байна шүү'], ['saihan shu','Сайхан шүү'], ['saikhan shu','Сайхан шүү'],
+  ['goy shu','Гоё шүү'], ['goe shu','Гоё шүү'],
+  // 시간·일상
+  ['ajil deer','Ажил дээр'], ['ajil deer bn','Ажил дээр байна'], ['ajil deer baina','Ажил дээр байна'],
+  ['gertei bn','Гэртээ байна'], ['gertei baina','Гэртээ байна'], ['ger deer','Гэр дээр'],
+  ['tsag agaar','Цаг агаар'], ['tsag agaar saikhan','Цаг агаар сайхан'],
+  ['odoo ajil deer bn','Одоо ажил дээр байна'], ['odoo ajil deer baina','Одоо ажил дээр байна'],
+  ['margaash uulzaya','Маргааш уулзъя'], ['margaash uulzya','Маргааш уулзъя'],
+  ['unudur uulzaya','Өнөөдөр уулзъя'], ['uchigdur uulzsan','Өчигдөр уулзсан'],
+  ['yamar baina','Ямар байна'], ['khed tsag','Хэдэн цаг'], ['heden tsag','Хэдэн цаг'],
+  // 소망·격려
+  ['amjilt husie','Амжилт хүсье'], ['amjilt husii','Амжилт хүсье'], ['amjilt husye','Амжилт хүсье'],
+  ['sain yav','Сайн яв'], ['sain yavaarai','Сайн яваарай'], ['sain suuj','Сайн сууж'],
+  ['bayartai','Баяртай'],
+  // 감사 인사 확장
+  ['bayarlalaa bayarlalaa','Баярлалаа баярлалаа'], ['bayar bayarlalaa','Баяр баярлалаа'],
+  ['ta bayarlalaa','Та баярлалаа'],
+  // 초청·제안
+  ['orj ir','Орж ир'], ['orj ireerei','Орж ирээрэй'], ['sain baina','Сайн байна']
+];
+
+/* 3-2. 한 단어 사전 (채팅체·로마자·구어) */
+var LEX = {
+  // 인사
+  'sain':'сайн','saikhan':'сайхан','saihan':'сайхан','saixan':'сайхан','sainbainuu':'сайн байна уу',
+  'bayarlalaa':'баярлалаа','bayrlalaa':'баярлалаа','bayrlaa':'баярлалаа','bayarla':'баярлалаа',
+  'bayar':'баяр','bayartai':'баяртай','bayr':'баяр',
+  'uuchlaarai':'уучлаарай','uuchlaa':'уучлаарай','uchlaarai':'уучлаарай','uuch':'ууч',
+  'mend':'мэнд','mendle':'мэндлээ','mendleee':'мэндлээ',
+  // 응답·조사
+  'tiim':'тийм','tim':'тийм','tiimee':'тиймээ','tii':'тийм','za':'за','zaza':'за',
+  'ok':'за','okey':'за','ugui':'үгүй','ugue':'үгүй','uguй':'үгүй','vgui':'үгүй',
+  'shu':'шүү','shuu':'шүү','shv':'шүү','shdee':'шдээ','sh':'ш',
+  // 의문사
+  'yu':'юу','you':'юу','yaj':'яаж','yamar':'ямар','khed':'хэд','hed':'хэд','heden':'хэдэн',
+  'hden':'хэдэн','haana':'хаана','haan':'хаана','hezee':'хэзээ','heze':'хэзээ',
+  'yagaad':'яагаад','yagaa':'яагаад','hen':'хэн','ali':'аль','hedee':'хэдээ','hesdee':'хэзээ',
+  // 대명사·지시
+  'bi':'би','chi':'чи','ta':'та','bid':'бид','tany':'таны','tanii':'таны','tanai':'таны',
+  'mini':'миний','minii':'миний','chinii':'чиний','cini':'чиний','chamd':'чамд','cham':'чам',
+  'nadad':'надад','nad':'над','namaig':'намайг','namai':'намайг','ene':'энэ','ter':'тэр',
+  'ted':'тэд','manai':'манай','biden':'бидэн','teruud':'тэд','ed':'эд','miniihen':'минийхэн',
+  // 형용·부사
+  'goe':'гоё','goy':'гоё','goo':'гоё','goygo':'гоё','saikhan':'сайхан','muu':'муу','muuhai':'муухай',
+  'ih':'их','ikh':'их','baga':'бага','tom':'том','jijig':'жижиг','shine':'шинэ','huuchin':'хуучин',
+  'sainxan':'сайхан','zuw':'зөв','zuv':'зөв','buruu':'буруу','hen':'хэн','shal':'шал',
+  // 동사·서술
+  'baina':'байна','bain':'байна','bn':'байна','bna':'байна','bnu':'байна уу','bnuu':'байна уу',
+  'bai':'бай','baih':'байх','baihgui':'байхгүй','bolno':'болно','bolohgui':'болохгүй',
+  'bolku':'болохгүй','bolhku':'болохгүй','bol':'бол','bolloo':'боллоо','bolson':'болсон',
+  'medehgui':'мэдэхгүй','medku':'мэдэхгүй','medhgui':'мэдэхгүй','mdku':'мэдэхгүй','medhuu':'мэдэхгүй',
+  'med':'мэд','medne':'мэднэ','medlee':'мэдлээ','medeh':'мэдэх',
+  'yav':'яв','yavna':'явна','yavya':'явъя','yaviy':'явъя','yavah':'явах','yavku':'явахгүй',
+  'ir':'ир','irne':'ирнэ','ireerei':'ирээрэй','irj':'ирж','irsen':'ирсэн',
+  'och':'оч','ochno':'очно','ochya':'очъё','ido':'идъё','ide':'идээ','id':'ид',
+  'uu':'уу','uuna':'ууна','uuchih':'уучих','uulzah':'уулзах','uulzaya':'уулзъя','uulzya':'уулзъя',
+  'uulzlaa':'уулзлаа','uulzsan':'уулзсан','uulzii':'уулзъя','hutlal':'хүртэл','hutel':'хүртэл',
+  'heregtei':'хэрэгтэй','hereggui':'хэрэггүй','hereg':'хэрэг','huseh':'хүсэх','husie':'хүсье',
+  'husii':'хүсье','huleene':'хүлээнэ','huleej':'хүлээж','hulee':'хүлээ',
+  'jargal':'жаргал','bayr':'баяр',
+  // 시간
+  'odoo':'одоо','odo':'одоо','margaash':'маргааш','margash':'маргааш','margaas':'маргааш',
+  'unudur':'өнөөдөр','unoodor':'өнөөдөр','onoodor':'өнөөдөр','onoodur':'өнөөдөр',
+  'sainbnu':'сайн байна уу','sainbainuu':'сайн байна уу','snbnu':'сайн байна уу','snbnuu':'сайн байна уу',
+  'sn':'сайн','uu':'уу','bln':'болно','medk':'мэдэхгүй','yvuu':'юу вэ','yvb':'юу байна',
+  'uchigdur':'өчигдөр','uchigdar':'өчигдөр','ucigdur':'өчигдөр','ugloo':'өглөө','uglo':'өглөө',
+  'oroi':'орой','udesh':'үдэш','udeshiin':'үдэш','shono':'шөнө','udur':'өдөр','udriin':'өдрийн',
+  'tsag':'цаг','tsagiin':'цагийн','minut':'минут','sar':'сар','jil':'жил','honog':'хоног',
+  'doloo honour':'долоо хоног','doloo honog':'долоо хоног','enээ жил':'энэ жил',
+  // 생활·명사
+  'ajil':'ажил','ajliin':'ажлын','ger':'гэр','gertei':'гэртэй','gerte':'гэртээ',
+  'mungu':'мөнгө','mongo':'мөнгө','munguu':'мөнгө','mongon':'мөнгөн','tugrug':'төгрөг',
+  'hool':'хоол','hol':'хоол','hooloo':'хоолоо','us':'ус','tsai':'цай','tsainy':'цайны',
+  'nuur':'нуур','uul':'уул','gazar':'газар','hot':'хот','hots':'хот','gudamj':'гудамж',
+  'deer':'дээр','dor':'дор','dotor':'дотор','gadaa':'гадаа','gadna':'гадна','dun':'дүн',
+  'hayg':'хайг','bichig':'бичиг','nom':'ном','surгууль':'сургууль','surguuli':'сургууль',
+  'bagsh':'багш','oyutan':'оюутан','hand':'ханд','utas':'утас','zurag':'зураг','duu':'дуу',
+  // 신체·감정
+  'hairtai':'хайртай','hair':'хайр','setgel':'сэтгэл','setgeliin':'сэтгэлийн','zurh':'зүрх',
+  'zurhen':'зүрхэн','jargaltai':'жаргалтай','gants':'ганц','huchtei':'хүчтэй',
+  // 숫자 (기본)
+  'neg':'нэг','hoyor':'хоёр','hoyr':'хоёр','gurav':'гурав','duruv':'дөрөв','tav':'тав',
+  'zurgaa':'зургаа','doloo':'долоо','naim':'найм','yos':'ес','arav':'арав','zuu':'зуу',
+  'myanga':'мянга','myang':'мянга',
+  // 예/아니오 확장
+  'bolnoo':'болно','zaa':'заа','zaa za':'за за','eneeree':'энээрээ','teg':'тэг',
+  'tegvel':'тэгвэл','gehdee':'гэхдээ','gej':'гэж','geed':'гээд','gui':'гүй'
+};
+
+/* 이름·지명처럼 그대로 두면 좋은 단어는 규칙으로 처리 (사전 불필요) */
+
+/* 3-3. 자모 규칙 (사전에 없을 때) */
+var GRAPHEMES = [
+  ['shch','щ'],['sh','ш'],['ch','ч'],['ts','ц'],['tz','ц'],['kh','х'],['gh','г'],
+  ['ng','нг'],['zh','ж'],['dj','ж'],['th','т'],['ph','ф'],['kh','х'],['h','х'],
+  ['yo','ё'],['yu','ю'],['ya','я'],['ye','е'],['yi','йи'],['yi','йи'],
+  ['ai','ай'],['ei','эй'],['oi','ой'],['ui','уй'],['au','ау'],['ou','оу'],
+  ['oo','оо'],['uu','уу'],['ee','ээ'],['aa','аа'],
+  ['a','а'],['b','б'],['v','в'],['w','в'],['g','г'],['d','д'],['e','э'],['z','з'],
+  ['i','и'],['j','ж'],['k','к'],['l','л'],['m','м'],['n','н'],['p','п'],['r','р'],
+  ['s','с'],['t','т'],['f','ф'],['c','ц'],['x','х'],['q','к'],['y','й'],
+  ['ö','ө'],['ü','ү'],['ё','ё']
+];
+
+var VOWELS_LAT = 'aeiouöü';
+
+function normalizeWord(w){
+  return String(w||'')
+    .toLowerCase()
+    .replace(/[’'`´]/g,'')
+    .replace(/[^a-zà-ÿ\u0400-\u04FF0-9]/g,'');
+}
+function cleanKey(s){
+  return String(s||'').toLowerCase()
+    .replace(/[’'`´]/g,'')
+    .replace(/[^\p{L}\p{N}]+/gu,' ')
+    .trim();
+}
+/* 모음조화: 앞모음(э,ө,ү) 단어인지 판단 */
+function isFront(word){
+  var w = String(word || '').toLowerCase();
+  if (/[öü]/.test(w)) return true;          // 앞모음 표기
+  if (/[ao]/.test(w)) return false;         // 뒷모음
+  if (/e/.test(w)) return true;             // э = 앞모음
+  return false;                             // u 단독은 기본 뒷모음
+}
+/* 사전/어간의 마지막 모음에 맞춘 연결모음 */
+function connectorVowel(word){
+  var m = word.match(/[aeiouöü]+/g);
+  if(!m) return 'э';
+  var last = m[m.length-1];
+  var ch = last[last.length-1];
+  var map = {a:'а', o:'о', u:'у', e:'э', i:'и', ö:'ө', ü:'ү'};
+  return map[ch] || 'э';
+}
+
+/* 규칙 기반 음역 */
+function ruleTranslit(word){
+  var w = String(word||'').toLowerCase();
+  var out = '';
+  var front = isFront(w);
+  var i = 0;
+  while (i < w.length){
+    var matched = false;
+    for (var g = 0; g < GRAPHEMES.length; g++){
+      var pat = GRAPHEMES[g][0], rep = GRAPHEMES[g][1];
+      if (w.substr(i, pat.length) === pat){
+        // o / u 는 모음조화에 따라 ө / ү 로
+        if (pat === 'o') rep = front ? 'ө' : 'о';
+        if (pat === 'oo') rep = front ? 'өө' : 'оо';
+        if (pat === 'u') rep = front ? 'ү' : 'у';
+        if (pat === 'uu') rep = front ? 'үү' : 'уу';
+        out += rep; i += pat.length; matched = true; break;
+      }
+    }
+    if (!matched){ out += w[i]; i++; }
+  }
+  return out;
+}
+
+/* 어미 처리: -ku / -gui / -tai / -laa 등 */
+function suffixTranslit(key){
+  var m;
+  // ~хгүй (못하다/없다): medku, bolku, yavku, medehgui ...
+  if ((m = key.match(/^(.*?)(h?gui|h?ku|h?gvi|h?kvi)$/)) && m[1].length >= 2){
+    var stem = m[1];
+    var v = connectorVowel(stem);
+    var cyr = wordToCyrillicPlain(stem);
+    return cyr + v + 'хгүй';
+  }
+  // ~тай/тэй
+  if ((m = key.match(/^(.*?)(tai|tei|toy|toi)$/)) && m[1].length >= 2){
+    var s2 = m[1];
+    var cyr2 = wordToCyrillicPlain(s2);
+    var f2 = isFront(key);
+    return cyr2 + (f2 ? 'тэй' : 'тай');
+  }
+  // 과거 ~лаа/лээ/лоо/лүү
+  if ((m = key.match(/^(.*?)(laa|lee|loo|luu)$/)) && m[1].length >= 3){
+    var s3 = m[1];
+    var cyr3 = wordToCyrillicPlain(s3);
+    var suffixMap = {laa:'лаа', lee:'лээ', loo:'лоо', luu:'лүү'};
+    return cyr3 + suffixMap[m[2]];
+  }
+  // ~аа/ээ 강조
+  if ((m = key.match(/^(.*?)(aa|ee|oo|uu)$/)) && m[1].length >= 3 && LEX[m[1]]){
+    var base = LEX[m[1]];
+    var vmap = {aa:'аа', ee:'ээ', oo:'оо', uu:'үү'};
+    return base + vmap[m[2]];
+  }
+  return null;
+}
+
+/* 사전 + 어미 처리 + 규칙을 재귀 없이 */
+function wordToCyrillicPlain(key){
+  if (LEX[key]) return LEX[key];
+  var s = suffixTranslit(key);
+  if (s) return s;
+  return ruleTranslit(key);
+}
+
+/* 대소문자·첫 글자 처리 */
+function applyCase(cyr, original){
+  var o = String(original||'');
+  if (!cyr) return cyr;
+  var first = o.charAt(0);
+  if (o.length >= 4 && o === o.toUpperCase() && /[A-ZА-ЯӨҮ]/.test(o)){
+    return cyr.toUpperCase();
+  }
+  if (/[a-zà-ÿ]/.test(first)) return cyr.charAt(0).toLowerCase() + cyr.slice(1);
+  if (/[A-ZÀ-Þ]/.test(first)) return cyr.charAt(0).toUpperCase() + cyr.slice(1);
+  return cyr;
+}
+
+/* 메인: 로마자 문장 → 키릴 몽골어 */
+function romanToCyrillic(text){
+  var src = String(text||'');
+  if (!src.trim()) return '';
+
+  // 단어/구분자 분리
+  var parts = src.split(/([^\p{L}\p{N}]+)/u);
+  var wordIdx = [];
+  for (var i = 0; i < parts.length; i++){
+    if (parts[i] && /[\p{L}\p{N}]/u.test(parts[i])) wordIdx.push(i);
+  }
+  var keys = wordIdx.map(function(ix){ return cleanKey(parts[ix]); });
+
+  // 1) 여러 단어 표현 매칭 (긴 것부터)
+  var converted = {};
+  for (var wi = 0; wi < wordIdx.length; wi++){
+    var best = null, bestLen = 0;
+    for (var len = Math.min(6, wordIdx.length - wi); len >= 2; len--){
+      var okGap = true;
+      for (var k = 1; k < len; k++){
+        var gap = parts[wordIdx[wi+k]-1];
+        if (!/^\s+$/.test(gap)) { okGap = false; break; }
+      }
+      if (!okGap) continue;
+      var phraseKey = keys.slice(wi, wi+len).join(' ');
+      for (var p = 0; p < PHRASES.length; p++){
+        if (PHRASES[p][0] === phraseKey){ best = PHRASES[p][1]; bestLen = len; break; }
+      }
+      if (best) break;
+    }
+    if (best){
+      parts[wordIdx[wi]] = applyCase(best, parts[wordIdx[wi]]);
+      converted[wordIdx[wi]] = true;
+      for (var k2 = 1; k2 < bestLen; k2++){
+        parts[wordIdx[wi+k2]] = '';
+        if (k2 > 1) parts[wordIdx[wi+k2]-1] = '';
+      }
+      wi += bestLen - 1;
+    }
+  }
+
+  // 2) 단어 단위 변환
+  var outParts = parts.map(function(p, pi){
+    if (!p || !/[\p{L}\p{N}]/u.test(p)) return p;
+    if (converted[pi]) return p;
+    var key = normalizeWord(p);
+    if (!key) return p;
+    var cyr = LEX[key] || suffixTranslit(key) || ruleTranslit(key);
+    return applyCase(cyr, p);
+  });
+
+  return outParts.join('')
+    .replace(/[ \t]{2,}/g,' ')
+    .replace(/\s+([,.!?;:])/g,'$1')
+    .trim();
+}
+
+/* =========================================================
+   4. 키릴 몽골어 → 한글 발음 / 로마자
+   ========================================================= */
+var HANGUL_C = {
+  'б':'ㅂ','в':'ㅂ','г':'ㄱ','д':'ㄷ','ж':'ㅈ','з':'ㅈ','к':'ㅋ','л':'ㄹ','м':'ㅁ',
+  'н':'ㄴ','п':'ㅍ','р':'ㄹ','с':'ㅅ','т':'ㅌ','ф':'ㅍ','х':'ㅎ','ц':'ㅊ','ч':'ㅊ',
+  'ш':'ㅅ','щ':'ㅅ'
+};
+var HANGUL_V = {
+  'а':'ㅏ','э':'ㅔ','и':'ㅣ','о':'ㅗ','ө':'ㅗ','у':'ㅜ','ү':'ㅜ','ы':'ㅡ',
+  'я':'ㅑ','е':'ㅖ','ё':'ㅛ','ю':'ㅠ','й':'ㅣ'
+};
+var LAT = {
+  'а':'a','б':'b','в':'v','г':'g','д':'d','е':'ye','ё':'yo','ж':'j','з':'z','и':'i',
+  'й':'i','к':'k','л':'l','м':'m','н':'n','о':'o','ө':'ö','п':'p','р':'r','с':'s',
+  'т':'t','у':'u','ү':'ü','ф':'f','х':'kh','ц':'ts','ч':'ch','ш':'sh','щ':'shch',
+  'ъ':'','ы':'y','ь':"'",'э':'e','ю':'yu','я':'ya'
+};
+
+function composeSyllable(cho, jung, jong){
+  var JONG = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+  var ci = CHO_LIST.indexOf(cho), ji = JUNG_LIST.indexOf(jung), joi = JONG.indexOf(jong || '');
+  if (ci < 0) ci = 11; // ㅇ
+  if (ji < 0) ji = 0;
+  if (joi < 0) joi = 0;
+  return String.fromCharCode(0xAC00 + (ci * 21 + ji) * 28 + joi);
+}
+var CHO_LIST = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+var JUNG_LIST = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
+var JONG_LIST = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+var CODA_OK = {'ㄴ':1,'ㄹ':1,'ㅁ':1,'ㅇ':1};
+
+/* 한국어 표기 관례를 따른 키릴 몽골어 → 한글 음역
+   · 긴 모음(аа, өө …)은 한 음절로
+   · р 는 항상 '르' (몽골어 탄설음), л 는 받침 ㄹ
+   · ш/ч/ц + у → 슈/츄/츄 (구개음화)
+   · нг → ㅇ 받침, ъ → '으' */
+function cyrWordToHangul(word){
+  var w = String(word||'').toLowerCase().replace(/[ь]/g,'');
+  w = w.replace(/(а|э|и|о|ө|у|ү)\1/g, '$1');   // 긴 모음 축약
+  w = w.replace(/([шчц])$/, '$1и');                 // 어말 ш/ч/ц → 시/치/치
+  var tokens = [];
+  for (var i = 0; i < w.length; i++){
+    var ch = w[i];
+    if (ch === 'н' && w[i+1] === 'г'){ tokens.push({ t:'c', v:'ㅇ', src:'нг' }); i++; continue; }
+    if (ch === 'ъ'){ tokens.push({ t:'flush' }); continue; }   // 음절 분리(зъя → 즈야)
+    if (ch === 'ь'){ continue; }
+    if (HANGUL_V[ch]) tokens.push({ t:'v', v:HANGUL_V[ch] });
+    else if (HANGUL_C[ch]) tokens.push({ t:'c', v:HANGUL_C[ch], src:ch });
+    else tokens.push({ t:'x', v:ch });
+  }
+  var out = [];
+  var pending = [];
+
+  function attachCoda(c){
+    if (!out.length) return false;
+    var code = out[out.length-1].charCodeAt(0);
+    if (code < 0xAC00 || code > 0xD7A3) return false;
+    var idx = code - 0xAC00;
+    if (Math.floor(idx % 28) !== 0) return false;
+    var jo = JONG_LIST.indexOf(c);
+    if (jo <= 0) return false;
+    out[out.length-1] = String.fromCharCode(code + jo);
+    return true;
+  }
+  function pushCons(tk, allowCoda){
+    var c = tk.v;
+    if (tk.src === 'р'){ out.push(composeSyllable('ㄹ','ㅡ','')); return; }
+    if (c === 'ㄹ'){ if (allowCoda && attachCoda('ㄹ')) return; out.push(composeSyllable('ㄹ','ㅡ','')); return; }
+    if (CODA_OK[c] && allowCoda && attachCoda(c)) return;
+    out.push(composeSyllable(c, 'ㅡ', ''));
+  }
+
+  for (var k = 0; k < tokens.length; k++){
+    var tk = tokens[k];
+    if (tk.t === 'v'){
+      var onset = 'ㅇ';
+      if (pending.length){
+        var last = pending.pop();
+        while (pending.length) pushCons(pending.shift(), true);
+        onset = last.v;
+        if (last.src === 'р' && onset === 'ㄹ'){
+          out.push(composeSyllable('ㄹ','ㅡ',''));
+          onset = 'ㅇ';
+        }
+      }
+      var vowel = tk.v;
+      if ((onset === 'ㅅ' || onset === 'ㅈ' || onset === 'ㅊ') && vowel === 'ㅜ') vowel = 'ㅠ';
+      out.push(composeSyllable(onset, vowel, ''));
+    } else if (tk.t === 'c'){
+      pending.push(tk);
+    } else if (tk.t === 'flush'){
+      while (pending.length) pushCons(pending.shift(), true);
+    } else {
+      while (pending.length) pushCons(pending.shift(), true);
+      out.push(tk.v);
+    }
+  }
+  while (pending.length){
+    var c2 = pending.shift();
+    if (pending.length === 0 && c2.src !== 'р' && CODA_OK[c2.v] && attachCoda(c2.v)) continue;
+    pushCons(c2, true);
+  }
+  return out.join('');
+}
+
+function cyrToHangul(text){
+  return String(text||'').split(/([^\u0400-\u04FF]+)/).map(function(seg){
+    if (!/[\u0400-\u04FF]/.test(seg)) return seg;
+    return seg.split(/([^\u0400-\u04FF]+)/).map(function(x){
+      return /[\u0400-\u04FF]/.test(x) ? x.split(/\s+/).map(cyrWordToHangul).join(' ') : x;
+    }).join('');
+  }).join('');
+}
+
+function cyrToLatin(text){
+  var s = String(text||'').toLowerCase();
+  var out = '';
+  for (var i = 0; i < s.length; i++){
+    var ch = s[i];
+    if (ch === 'е' && i === 0) { out += 'ye'; continue; }
+    if (LAT[ch] !== undefined) out += LAT[ch];
+    else out += ch;
+  }
+  // 문장 첫 글자 대문자화
+  return out.replace(/(^|[.!?]\s+)([a-zа-я])/g, function(_, a, b){ return a + b.toUpperCase(); })
+            .replace(/^[a-zа-я]/, function(c){ return c.toUpperCase(); });
+}
+
+/* =========================================================
+   5. 내장 문장 사전 (정확도 보정 · 오프라인 대응)
+   ========================================================= */
+var PAIRS_MN_KO = {
+  'сайн байна уу':'안녕하세요',
+  'сайн уу':'안녕',
+  'сайн байна':'좋아요',
+  'сайн':'좋아요',
+  'баярлалаа':'고마워요',
+  'баярлалаа шүү':'정말 고마워요',
+  'уучлаарай':'미안해요',
+  'уучлаарай шүү':'정말 미안해요',
+  'тийм':'네',
+  'тийм шүү':'그래요',
+  'үгүй':'아니요',
+  'за':'네, 좋아요',
+  'хайртай шүү':'사랑해요',
+  'би чамд хайртай':'나는 너를 사랑해',
+  'чамд хайртай':'너를 사랑해',
+  'яаж байна':'어떻게 지내요?',
+  'яаж байна уу':'어떻게 지내세요?',
+  'юу байна':'뭐 해요?',
+  'юу байна?':'뭐 해요?',
+  'би мэдэхгүй байна':'나도 몰라요',
+  'юу байна':'뭐 해?',
+  'одоо ажил дээр байна':'지금 일하고 있어요',
+  'ажил дээр байна':'일하고 있어요',
+  'гэртээ байна':'집에 있어요',
+  'сайн уу':'안녕',
+  'баярлалаа шүү':'정말 고마워요',
+  'мэдэхгүй байна':'몰라요',
+  'мэдэхгүй':'몰라요',
+  'болохгүй':'안 돼요',
+  'болно':'돼요',
+  'баяртай':'안녕히 계세요',
+  'амжилт хүсье':'행운을 빌어요',
+  'өнөөдөр цаг агаар сайхан байна':'오늘 날씨가 좋아요',
+  'цаг агаар сайхан байна':'날씨가 좋아요',
+  'би ажил дээр байна':'나 지금 일하고 있어요',
+  'ажил дээр байна':'일하고 있어요',
+  'маргааш уулзъя':'내일 만나요',
+  'сайхан байна':'예뻐요',
+  'гоё байна':'멋져요',
+  'гоё шүү':'멋져요',
+  'би сайн байна':'나는 잘 지내요',
+  'та сайн байна уу':'안녕하세요',
+  'оройн мэнд':'좋은 저녁이에요',
+  'өглөөний мэнд':'좋은 아침이에요'
+};
+var PAIRS_KO_MN = {
+  '안녕하세요':'Сайн байна уу',
+  '안녕':'Сайн байна уу',
+  '고마워요':'Баярлалаа',
+  '감사합니다':'Баярлалаа',
+  '미안해요':'Уучлаарай',
+  '죄송합니다':'Уучлаарай',
+  '네':'Тийм',
+  '아니요':'Үгүй',
+  '사랑해요':'Хайртай шүү',
+  '사랑해':'Хайртай шүү',
+  '몰라요':'Мэдэхгүй байна',
+  '안 돼요':'Болохгүй',
+  '돼요':'Болно',
+  '안녕히 계세요':'Баяртай',
+  '행운을 빌어요':'Амжилт хүсье',
+  '잘 지내요?':'Яаж байна?',
+  '어떻게 지내세요?':'Яаж байна уу?',
+  '뭐 해요?':'Юу байна?',
+  '내일 만나요':'Маргааш уулзъя',
+  '오늘 날씨가 좋아요':'Өнөөдөр цаг агаар сайхан байна',
+  '얼마예요?':'Хэд вэ?',
+  '화장실이 어디예요?':'Бие засах газар хаана байна?',
+  '괜찮아요':'Зүгээр'
+};
+function normSentence(s){
+  return String(s||'').toLowerCase().replace(/[.,!?~"'“”‘’]/g,'').replace(/\s+/g,' ').trim();
+}
+function localPair(text, sl, tl){
+  var key = normSentence(text);
+  if (sl === 'mn' && tl === 'ko'){
+    if (PAIRS_MN_KO[key]) return PAIRS_MN_KO[key];
+  }
+  if (sl === 'ko' && tl === 'mn'){
+    if (PAIRS_KO_MN[key]) return PAIRS_KO_MN[key];
+  }
+  return null;
+}
+
+/* =========================================================
+   6. 번역 엔진 (무료 3중 폴백 + 선택 Gemini)
+   ========================================================= */
+function fetchJSON(url, ms, opts){
+  var ctrl = ('AbortController' in window) ? new AbortController() : null;
+  var timer = setTimeout(function(){ if (ctrl) ctrl.abort(); }, ms || 9000);
+  var o = opts || {};
+  o.cache = 'no-store';
+  if (ctrl) o.signal = ctrl.signal;
+  return fetch(url, o).then(function(res){
+    clearTimeout(timer);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }, function(err){ clearTimeout(timer); throw err; });
+}
+
+/* 엔진 1: Google 무료 (clients5, CORS 허용 확인됨) */
+function engineGoogle(q, sl, tl){
+  var url = 'https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=' + sl + '&tl=' + tl + '&q=' + encodeURIComponent(q);
+  return fetchJSON(url, 9000).then(function(r){
+    var out = '';
+    if (typeof r === 'string') out = r;
+    else if (Array.isArray(r)){
+      out = r.map(function(x){
+        if (typeof x === 'string') return x;
+        if (Array.isArray(x)) return x.join('');
+        return '';
+      }).join('\n');
+    }
+    out = String(out).replace(/\n{3,}/g,'\n\n').trim();
+    if (!out) throw new Error('empty');
+    return { text: out, engine: 'Google 무료' };
+  });
+}
+
+/* 엔진 2: MyMemory (CORS 허용, 500자 제한 → 문장 분할) */
+function splitSentences(t){
+  var out = [], buf = '';
+  for (var i = 0; i < t.length; i++){
+    var ch = t[i];
+    buf += ch;
+    var isEnd = (ch === '.' || ch === '!' || ch === '?' || ch === '。' || ch === '！' || ch === '？' || ch === '\n');
+    if (isEnd && (i === t.length - 1 || /\s/.test(t[i+1]))){
+      if (buf.trim()) out.push(buf.trim());
+      buf = '';
+    }
+  }
+  if (buf.trim()) out.push(buf.trim());
+  return out;
+}
+function splitChunks(text, max){
+  var t = String(text), out = [], buf = '';
+  var pieces = splitSentences(t);
+  if (!pieces.length) pieces = [t];
+  for (var i = 0; i < pieces.length; i++){
+    var p = pieces[i];
+    while (p.length > max){
+      out.push(p.slice(0, max)); p = p.slice(max);
+    }
+    if ((buf + p).length > max){ if (buf) out.push(buf); buf = p; }
+    else buf += (buf ? ' ' : '') + p;
+  }
+  if (buf) out.push(buf);
+  return out.length ? out : [t.slice(0, max)];
+}
+function engineMyMemory(q, sl, tl){
+  var langpair = (sl === 'ko' ? 'ko|mn' : 'mn|ko');
+  var chunks = splitChunks(q, 420);
+  var results = [];
+  return chunks.reduce(function(p, chunk){
+    return p.then(function(){
+      var url = 'https://api.mymemory.translated.net/get?q=' + encodeURIComponent(chunk) + '&langpair=' + encodeURIComponent(langpair) + '&de=translator%40example.com';
+      return fetchJSON(url, 9000).then(function(r){
+        var t = r && r.responseData && r.responseData.translatedText;
+        if (!t) throw new Error('empty');
+        if (/MYMEMORY WARNING|QUERY LENGTH LIMIT|INVALID LANGUAGE/i.test(t)) throw new Error('quota');
+        results.push(t);
+      });
+    });
+  }, Promise.resolve()).then(function(){
+    var text = results.join(' ').trim();
+    if (!text) throw new Error('empty');
+    return { text: text, engine: 'MyMemory' };
+  });
+}
+
+/* 엔진 3: Google gtx (translate.googleapis.com) */
+function engineGoogleGtx(q, sl, tl){
+  var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=' + sl + '&tl=' + tl + '&dt=t&q=' + encodeURIComponent(q);
+  return fetchJSON(url, 9000).then(function(r){
+    if (!Array.isArray(r) || !Array.isArray(r[0])) throw new Error('shape');
+    var out = r[0].map(function(x){ return x && x[0] ? x[0] : ''; }).join('').trim();
+    if (!out) throw new Error('empty');
+    return { text: out, engine: 'Google (gtx)' };
+  });
+}
+
+/* 선택: Gemini AI 정밀 모드 */
+function engineGemini(q, sl, tl, key){
+  var srcName = sl === 'ko' ? 'Korean' : 'Mongolian (Cyrillic)';
+  var dstName = tl === 'ko' ? 'Korean' : 'Mongolian (Cyrillic)';
+  var prompt = [
+    'You are a professional ' + srcName + ' to ' + dstName + ' translator.',
+    'Translate the message below naturally, keeping the speaker\'s tone (casual chat, polite, or business).',
+    'If the source is Mongolian chat shorthand or romanized, understand the intent first.',
+    'Output ONLY the translation, no explanations, no quotes, no romanization.',
+    '',
+    'MESSAGE:',
+    q
+  ].join('\n');
+  var body = JSON.stringify({
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { temperature: 0.2, maxOutputTokens: 2048 }
+  });
+  var models = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+  var idx = 0;
+  function attempt(){
+    if (idx >= models.length) return Promise.reject(new Error('gemini failed'));
+    var m = models[idx++];
+    var url = 'https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent?key=' + encodeURIComponent(key);
+    return fetchJSON(url, 20000, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: body
+    }).then(function(r){
+      var t = (r && r.candidates && r.candidates[0] && r.candidates[0].content && r.candidates[0].content.parts || [])
+        .map(function(p){ return p.text || ''; }).join('').trim();
+      if (!t) throw new Error('empty');
+      return { text: t, engine: 'Gemini AI' };
+    }).catch(function(err){
+      var msg = String(err && err.message || '');
+      if (msg.indexOf('400') >= 0 || msg.indexOf('403') >= 0) throw err;  // 키 오류는 재시도하지 않음
+      return attempt();
+    });
+  }
+  return attempt();
+}
+
+/* 원문 문장부호(?, !)를 번역 결과에 살림 */
+function withPunct(source, result){
+  var m = String(source).match(/([?!？！]+)\s*$/);
+  if (!m) return result;
+  var mark = m[1].replace(/[？！]/g, function(c){ return c === '？' ? '?' : '!'; });
+  if (/[?!]\s*$/.test(result)) return result;
+  return result + mark;
+}
+
+/* 문장 단위 번역: 몽골어 → 한국어는 문장별로 나눠 질문·서술을 살린다 */
+function translateSmart(q, sl, tl){
+  var lp = localPair(q, sl, tl);
+  if (lp) return Promise.resolve({ text: withPunct(q, lp), engine: '내장 사전' });
+  if (sl === 'mn' && q.length <= 400){
+    var parts = splitSentences(q);
+    if (parts.length > 1 && parts.length <= 6){
+      var outs = [], engine = '';
+      var chain = Promise.resolve();
+      parts.forEach(function(part){
+        chain = chain.then(function(){
+          var lp2 = localPair(part, sl, tl);
+          if (lp2){ outs.push(withPunct(part, lp2)); return; }
+          return translateText(part, sl, tl).then(function(r){
+            outs.push(withPunct(part, r.text)); engine = r.engine;
+          });
+        });
+      });
+      return chain.then(function(){
+        return { text: outs.join(' '), engine: engine || '내장 사전' };
+      });
+    }
+  }
+  return translateText(q, sl, tl);
+}
+
+/* 엔진 순서 결정 */
+function translateText(q, sl, tl){
+  var settings = getSettings();
+  var chain = [];
+  if (settings.ai && settings.key){
+    chain.push(function(){ return engineGemini(q, sl, tl, settings.key); });
+  }
+  var pref = settings.engine || 'auto';
+  if (pref === 'mymemory'){
+    chain.push(function(){ return engineMyMemory(q, sl, tl); });
+    chain.push(function(){ return engineGoogle(q, sl, tl); });
+    chain.push(function(){ return engineGoogleGtx(q, sl, tl); });
+  } else if (pref === 'google'){
+    chain.push(function(){ return engineGoogle(q, sl, tl); });
+    chain.push(function(){ return engineGoogleGtx(q, sl, tl); });
+    chain.push(function(){ return engineMyMemory(q, sl, tl); });
+  } else {
+    chain.push(function(){ return engineGoogle(q, sl, tl); });
+    chain.push(function(){ return engineMyMemory(q, sl, tl); });
+    chain.push(function(){ return engineGoogleGtx(q, sl, tl); });
+  }
+  var i = 0;
+  function next(){
+    if (i >= chain.length) return Promise.reject(new Error('all engines failed'));
+    return chain[i++]().catch(function(){
+      if (i < chain.length) return next();
+      throw new Error('번역 서버에 연결하지 못했어요');
+    });
+  }
+  return next();
+}
+
+/* =========================================================
+   7. UI
+   ========================================================= */
+function $(id){ return document.getElementById(id); }
+var el = {
+  src: $('srcText'), badge: $('langBadge'), badgeText: $('langBadgeText'), count: $('charCount'),
+  pillL: $('pillLeft'), pillR: $('pillRight'), swap: $('btnSwap'), go: $('btnTranslate'), goLabel: $('goLabel'),
+  resultCard: $('resultCard'), resultLabel: $('resultLabel'), resultText: $('resultText'),
+  resultBadge: $('resultBadge'), resultBadgeText: $('resultBadgeText'),
+  pron: $('pronBlock'), warn: $('warnBox'), engineText: $('engineText'),
+  chipsKo: $('chipsKo'), chipsMn: $('chipsMn'),
+  histCard: $('historyCard'), histList: $('histList'),
+  overlay: $('overlay'), sheet: $('settingsSheet'),
+  geminiKey: $('geminiKey'), aiToggle: $('aiToggle'), themeSelect: $('themeSelect'), engineSelect: $('engineSelect'),
+  toast: $('toast')
+};
+
+var state = { dir: 'auto', last: null, busy: false, lastEngine: '' };
+
+/* 테마 */
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t || 'auto');
+  var meta = document.querySelector('meta[name="theme-color"]:not([media])');
+}
+function initTheme(){
+  var t = store.get(KEY.theme, 'auto');
+  if (['auto','light','dark'].indexOf(t) < 0) t = 'auto';
+  applyTheme(t);
+  el.themeSelect.value = t;
+}
+
+/* 토스트 */
+var toastTimer = null;
+function toast(msg){
+  el.toast.textContent = msg;
+  el.toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.toast.classList.remove('show'); }, 1900);
+}
+
+/* 복사 */
+function copyText(text){
+  if (!text) return;
+  var done = function(){ toast('복사했어요 ✓'); };
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text) ? done() : toast('복사 실패'); });
+  } else {
+    fallbackCopy(text) ? done() : toast('복사 실패');
+  }
+}
+function fallbackCopy(text){
+  try {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly','');
+    ta.style.position = 'fixed'; ta.style.top = '-1000px'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select(); ta.setSelectionRange(0, 99999);
+    var ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch(e){ return false; }
+}
+
+/* 언어 배지 */
+function updateBadge(){
+  var t = el.src.value.trim();
+  var d = detectLang(t);
+  el.badge.className = 'badge';
+  if (!t){ el.badge.classList.add('auto'); el.badgeText.textContent = '자동 감지'; }
+  else if (d === 'ko'){ el.badge.classList.add('ko'); el.badgeText.textContent = '한국어'; }
+  else if (d === 'mn-cyr'){ el.badgeText.textContent = '몽골어 (키릴)'; }
+  else if (d === 'mn-lat'){ el.badge.classList.add('lat'); el.badgeText.textContent = '몽골어 (영어발음)'; }
+  else { el.badge.classList.add('auto'); el.badgeText.textContent = '자동 감지'; }
+  el.count.textContent = t.length + '/1000';
+  updatePills(d, t);
+}
+function updatePills(d, t){
+  var dir = state.dir;
+  if (dir === 'auto'){
+    if (d === 'ko') dir = 'ko2mn';
+    else if (d === 'mn-cyr' || d === 'mn-lat') dir = 'mn2ko';
+    else dir = 'ko2mn';
+  }
+  var left = dir === 'ko2mn' ? ['한국어','Korean'] : ['몽골어','Mongolian'];
+  var right = dir === 'ko2mn' ? ['몽골어','Mongolian'] : ['한국어','Korean'];
+  el.pillL.innerHTML = left[0] + '<small>' + left[1] + '</small>';
+  el.pillR.innerHTML = right[0] + '<small>' + right[1] + '</small>';
+  el.goLabel.textContent = dir === 'ko2mn' ? '몽골어로 번역' : '한국어로 번역';
+}
+function currentDir(text){
+  if (state.dir !== 'auto') return state.dir;
+  var d = detectLang(text);
+  return d === 'ko' ? 'ko2mn' : 'mn2ko';
+}
+
+/* 결과 렌더 */
+function row(key, value, opts){
+  opts = opts || {};
+  var rowEl = document.createElement('div');
+  rowEl.className = 'pron-row';
+  var k = document.createElement('span');
+  k.className = 'pron-key'; k.textContent = key;
+  var v = document.createElement('span');
+  v.className = 'pron-val' + (opts.cls ? ' ' + opts.cls : '');
+  v.textContent = value;
+  rowEl.appendChild(k); rowEl.appendChild(v);
+  if (!opts.noCopy){
+    var btn = document.createElement('button');
+    btn.className = 'mini-copy';
+    btn.setAttribute('aria-label', key + ' 복사');
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+    btn.addEventListener('click', function(){ copyText(value); });
+    rowEl.appendChild(btn);
+  }
+  return rowEl;
+}
+
+function setBusy(b){
+  el.go.disabled = b;
+  if (b){
+    el.go.innerHTML = '<span class="spinner"></span><span>번역 중…</span>';
+  } else {
+    el.go.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg><span id="goLabel">' +
+      (currentDir(el.src.value) === 'ko2mn' ? '몽골어로 번역' : '한국어로 번역') + '</span>';
+    el.goLabel = $('goLabel');
+  }
+}
+
+function showResult(data){
+  el.resultCard.classList.add('show');
+  el.pron.innerHTML = '';
+  el.warn.classList.remove('show');
+  el.warn.textContent = '';
+  el.resultBadge.hidden = true;
+
+  if (data.mode === 'mn2ko'){
+    el.resultLabel.textContent = '한국어 번역';
+    el.resultText.textContent = data.ko;
+    el.resultText.className = 'result-main';
+    if (data.restored){
+      el.resultBadge.hidden = false;
+      el.resultBadgeText.textContent = '영어발음 → 키릴 복원';
+      el.pron.appendChild(row('① 키릴 복원', data.restored, { cls: 'restored' }));
+      el.pron.appendChild(row('② 한글 발음', cyrToHangul(data.restored)));
+      el.pron.appendChild(row('③ 로마자', cyrToLatin(data.restored), { cls: 'mono' }));
+      if (data.original && data.original !== data.restored){
+        el.pron.appendChild(row('원문', data.original, { noCopy: true }));
+      }
+    } else {
+      el.pron.appendChild(row('한글 발음', cyrToHangul(data.cyr)));
+      el.pron.appendChild(row('로마자', cyrToLatin(data.cyr), { cls: 'mono' }));
+    }
+  } else {
+    el.resultLabel.textContent = '몽골어 번역';
+    el.resultText.textContent = data.mn;
+    el.resultText.className = 'result-main cyr';
+    if (data.mn){
+      el.resultBadge.hidden = false;
+      el.resultBadgeText.textContent = '키릴 문자 · 발음 함께';
+    }
+    el.pron.appendChild(row('한글 발음', cyrToHangul(data.mn)));
+    el.pron.appendChild(row('영어 발음', cyrToLatin(data.mn), { cls: 'mono' }));
+  }
+  if (data.engine){
+    el.engineText.textContent = data.engine + (data.engine.indexOf('무료') >= 0 || data.engine.indexOf('사전') >= 0 ? '' : ' · 무료 엔진');
+  }
+  state.last = data;
+  renderHistory();
+}
+
+function showWarn(msg){
+  el.warn.textContent = msg;
+  el.warn.classList.add('show');
+}
+
+/* 메인 번역 실행 */
+function doTranslate(silent){
+  var raw = el.src.value.trim();
+  if (!raw){ if (!silent) toast('번역할 문장을 입력해 주세요'); return Promise.resolve(); }
+  if (state.busy) return Promise.resolve();
+  state.busy = true; setBusy(true);
+
+  var dir = currentDir(raw);
+  var detected = detectLang(raw);
+  var job;
+
+  if (dir === 'mn2ko'){
+    var cyr = raw, restored = null;
+    if (detected !== 'mn-cyr'){
+      restored = romanToCyrillic(raw);
+      cyr = restored || raw;
+    }
+    job = translateSmart(cyr, 'mn', 'ko');
+    job = job.then(function(res){
+      var data = { mode: 'mn2ko', ko: res.text, restored: restored, original: raw, cyr: cyr, engine: res.engine };
+      showResult(data);
+      pushHistory({ dir: 'mn2ko', src: raw, dst: res.text, restored: restored, cyr: cyr, engine: res.engine });
+    });
+  } else {
+    job = translateSmart(raw, 'ko', 'mn');
+    job = job.then(function(res){
+      var data = { mode: 'ko2mn', mn: res.text, ko: raw, engine: res.engine };
+      showResult(data);
+      pushHistory({ dir: 'ko2mn', src: raw, dst: res.text, engine: res.engine });
+    });
+  }
+
+  return job.catch(function(err){
+    el.resultCard.classList.add('show');
+    if (dir === 'mn2ko' && detected !== 'mn-cyr'){
+      var r = romanToCyrillic(raw);
+      el.resultLabel.textContent = '키릴 복원 결과';
+      el.resultText.textContent = r;
+      el.resultText.className = 'result-main cyr';
+      el.pron.innerHTML = '';
+      el.pron.appendChild(row('한글 발음', cyrToHangul(r)));
+      el.pron.appendChild(row('로마자', cyrToLatin(r), { cls: 'mono' }));
+      el.engineText.textContent = '오프라인 복원';
+    }
+    showWarn('번역 서버에 연결하지 못했어요. 잠시 후 다시 시도해 주세요. (키릴 복원과 발음 표기는 계속 사용할 수 있어요)');
+  }).then(function(){
+    state.busy = false; setBusy(false);
+  });
+}
+
+/* 히스토리 */
+function pushHistory(entry){
+  entry.ts = Date.now();
+  var list = store.get(KEY.hist, []);
+  if (!Array.isArray(list)) list = [];
+  list = list.filter(function(x){ return !(x && x.src === entry.src && x.dir === entry.dir); });
+  list.unshift(entry);
+  if (list.length > 12) list = list.slice(0, 12);
+  store.set(KEY.hist, list);
+  renderHistory();
+}
+function renderHistory(){
+  var list = store.get(KEY.hist, []);
+  if (!Array.isArray(list) || !list.length){
+    el.histCard.classList.remove('show');
+    return;
+  }
+  el.histCard.classList.add('show');
+  el.histList.innerHTML = '';
+  list.forEach(function(item){
+    var li = document.createElement('li');
+    var d = document.createElement('span');
+    d.className = 'dir';
+    d.textContent = item.dir === 'ko2mn' ? '한→몽' : '몽→한';
+    var box = document.createElement('div');
+    box.className = 'txt';
+    var from = document.createElement('div');
+    from.className = 'from'; from.textContent = item.src;
+    var to = document.createElement('div');
+    to.className = 'to'; to.textContent = item.dst;
+    box.appendChild(from); box.appendChild(to);
+    li.appendChild(d); li.appendChild(box);
+    li.addEventListener('click', function(){
+      el.src.value = item.src;
+      state.dir = 'auto';
+      updateBadge();
+      if (item.dir === 'mn2ko'){
+        showResult({ mode: 'mn2ko', ko: item.dst, restored: item.restored || null, cyr: item.cyr || item.src, original: item.src, engine: item.engine || '저장된 번역' });
+      } else {
+        showResult({ mode: 'ko2mn', mn: item.dst, ko: item.src, engine: item.engine || '저장된 번역' });
+      }
+      el.resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    el.histList.appendChild(li);
+  });
+}
+
+/* 빠른 회화 칩 */
+var QUICK_KO = ['안녕하세요','고마워요','사랑해요','얼마예요?','괜찮아요','내일 만나요','화장실이 어디예요?','계약서를 보내 주세요'];
+var QUICK_MN = ['sain bainuu','bayarlalaa','hairtai shu','yu bna?','yaj bn?','bi medku bn','bayartai'];
+function buildChips(){
+  QUICK_KO.forEach(function(t){
+    var b = document.createElement('button');
+    b.className = 'chip'; b.type = 'button'; b.textContent = t;
+    b.addEventListener('click', function(){ el.src.value = t; state.dir = 'ko2mn'; updateBadge(); doTranslate(); });
+    el.chipsKo.appendChild(b);
+  });
+  QUICK_MN.forEach(function(t){
+    var b = document.createElement('button');
+    b.className = 'chip'; b.type = 'button'; b.textContent = t;
+    b.addEventListener('click', function(){ el.src.value = t; state.dir = 'auto'; updateBadge(); doTranslate(); });
+    el.chipsMn.appendChild(b);
+  });
+}
+
+/* 음성 */
+function speak(text, lang){
+  if (!text) return;
+  if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined'){
+    toast('이 브라우저는 음성 듣기를 지원하지 않아요');
+    return;
+  }
+  try {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = lang;
+    u.rate = 0.95;
+    var voices = window.speechSynthesis.getVoices() || [];
+    var v = voices.filter(function(x){ return (x.lang || '').toLowerCase().indexOf(lang.slice(0,2)) === 0; })[0];
+    if (v) u.voice = v;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+    if (!v && lang.indexOf('mn') === 0) toast('기기에 몽골어 음성이 없어 기본 음성으로 읽어요');
+  } catch(e){ toast('음성을 재생할 수 없어요'); }
+}
+
+/* 설정 */
+function getSettings(){
+  return {
+    key: store.get(KEY.key, '') || '',
+    ai: !!store.get(KEY.ai, false),
+    engine: store.get(KEY.engine, 'auto') || 'auto'
+  };
+}
+function openSheet(){
+  var s = getSettings();
+  el.geminiKey.value = s.key;
+  el.aiToggle.checked = s.ai;
+  el.engineSelect.value = s.engine;
+  el.themeSelect.value = store.get(KEY.theme, 'auto');
+  el.overlay.classList.add('show');
+  el.sheet.classList.add('show');
+}
+function closeSheet(){
+  el.overlay.classList.remove('show');
+  el.sheet.classList.remove('show');
+}
+
+/* PWA 아이콘·매니페스트 */
+function setupPWA(){
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+    '<stop offset="0" stop-color="#60a5fa"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs>' +
+    '<rect width="512" height="512" rx="112" fill="url(#g)"/>' +
+    '<text x="256" y="212" font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="150" font-weight="700" fill="#ffffff" text-anchor="middle">한</text>' +
+    '<text x="256" y="400" font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="150" font-weight="700" fill="#dbeafe" text-anchor="middle">몽</text>' +
+    '</svg>';
+  var icon = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  document.getElementById('faviconLink').href = icon;
+  document.getElementById('appleIconLink').href = icon;
+
+  try {
+    var manifest = {
+      name: '한·몽 번역기', short_name: '한몽번역', description: '한국어 ↔ 몽골어 무료 번역기 (영어발음 몽골어 복원)',
+      start_url: location.href, display: 'standalone', orientation: 'portrait',
+      background_color: '#0b1220', theme_color: '#2563eb', lang: 'ko',
+      icons: [{ src: icon, sizes: '512x512', type: 'image/svg+xml', purpose: 'any' }]
+    };
+    var blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+    document.getElementById('manifestLink').href = URL.createObjectURL(blob);
+  } catch(e){ /* manifest 미지원 시 무시 */ }
+}
+
+/* =========================================================
+   8. 이벤트 연결
+   ========================================================= */
+function bind(){
+  el.src.addEventListener('input', updateBadge);
+  el.src.addEventListener('keydown', function(e){
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter'){ e.preventDefault(); doTranslate(); }
+  });
+  el.src.addEventListener('paste', function(){ setTimeout(updateBadge, 0); });
+
+  $('btnClear').addEventListener('click', function(){
+    el.src.value = ''; updateBadge(); el.src.focus();
+  });
+  $('btnPaste').addEventListener('click', function(){
+    if (navigator.clipboard && navigator.clipboard.readText){
+      navigator.clipboard.readText().then(function(t){
+        if (t){ el.src.value = t.slice(0,1000); updateBadge(); }
+        else toast('클립보드가 비어 있어요');
+      }, function(){ toast('붙여넣기는 길게 눌러 직접 해주세요'); });
+    } else {
+      toast('붙여넣기는 길게 눌러 직접 해주세요');
+    }
+  });
+  $('btnSpeakSrc').addEventListener('click', function(){
+    var t = el.src.value.trim();
+    if (!t) return;
+    var d = detectLang(t);
+    speak(d === 'ko' ? t : (d === 'mn-cyr' ? t : romanToCyrillic(t)), d === 'ko' ? 'ko-KR' : 'mn-MN');
+  });
+  el.swap.addEventListener('click', function(){
+    var t = el.src.value.trim();
+    if (state.last){
+      var swapped = state.last.mode === 'ko2mn' ? (state.last.mn || '') : (state.last.ko || '');
+      if (swapped){ el.src.value = swapped; }
+    }
+    state.dir = state.dir === 'ko2mn' ? 'mn2ko' : (state.dir === 'mn2ko' ? 'ko2mn' : (detectLang(t) === 'ko' ? 'mn2ko' : 'ko2mn'));
+    updateBadge();
+  });
+  el.go.addEventListener('click', function(){ doTranslate(); });
+
+  $('btnSpeakResult').addEventListener('click', function(){
+    if (!state.last) return;
+    if (state.last.mode === 'mn2ko') speak(state.last.ko, 'ko-KR');
+    else speak(state.last.mn, 'mn-MN');
+  });
+  $('btnCopyAll').addEventListener('click', function(){
+    if (!state.last) return;
+    var txt;
+    if (state.last.mode === 'mn2ko'){
+      txt = state.last.ko;
+      if (state.last.restored) txt += '\n(' + state.last.restored + ')';
+    } else {
+      txt = state.last.mn + '\n[' + cyrToHangul(state.last.mn) + ']';
+    }
+    copyText(txt);
+  });
+
+  $('btnTheme').addEventListener('click', function(){
+    var order = ['auto','light','dark'];
+    var cur = store.get(KEY.theme, 'auto');
+    var next = order[(order.indexOf(cur) + 1) % 3];
+    store.set(KEY.theme, next);
+    applyTheme(next);
+    el.themeSelect.value = next;
+    toast(next === 'auto' ? '시스템 테마' : (next === 'light' ? '라이트 모드' : '다크 모드'));
+  });
+
+  $('btnSettings').addEventListener('click', openSheet);
+  $('btnCloseSettings').addEventListener('click', closeSheet);
+  el.overlay.addEventListener('click', closeSheet);
+  $('btnSaveSettings').addEventListener('click', function(){
+    store.set(KEY.key, el.geminiKey.value.trim());
+    store.set(KEY.ai, el.aiToggle.checked);
+    store.set(KEY.theme, el.themeSelect.value);
+    store.set(KEY.engine, el.engineSelect.value);
+    applyTheme(el.themeSelect.value);
+    closeSheet();
+    toast('설정을 저장했어요');
+  });
+  $('btnWipe').addEventListener('click', function(){
+    [KEY.hist, KEY.key, KEY.ai, KEY.theme, KEY.engine].forEach(function(k){ store.del(k); });
+    el.geminiKey.value = ''; el.aiToggle.checked = false;
+    el.engineSelect.value = 'auto'; el.themeSelect.value = 'auto';
+    applyTheme('auto');
+    renderHistory();
+    closeSheet();
+    toast('저장된 기록과 설정을 지웠어요');
+  });
+  $('btnClearHistory').addEventListener('click', function(){
+    store.del(KEY.hist);
+    renderHistory();
+    toast('최근 번역을 지웠어요');
+  });
+
+  // 시트 스와이프 다운 (간단)
+  var startY = null;
+  el.sheet.addEventListener('touchstart', function(e){ startY = e.touches[0].clientY; }, { passive: true });
+  el.sheet.addEventListener('touchmove', function(e){
+    if (startY == null) return;
+    var dy = e.touches[0].clientY - startY;
+    if (dy > 90){ closeSheet(); startY = null; }
+  }, { passive: true });
+
+  window.addEventListener('online', function(){ toast('다시 연결됐어요'); });
+  window.addEventListener('offline', function(){ toast('오프라인 상태예요 · 키릴 복원은 계속 사용할 수 있어요'); });
+}
+
+/* =========================================================
+   9. 초기화
+   ========================================================= */
+initTheme();
+setupPWA();
+buildChips();
+bind();
+updateBadge();
+renderHistory();
+
+// 테스트 훅 (자동 검증용)
+window.__mnTest = {
+  detect: detectLang,
+  roman: romanToCyrillic,
+  hangul: cyrToHangul,
+  latin: cyrToLatin,
+  translate: function(text, dir){
+    el.src.value = text;
+    state.dir = dir || 'auto';
+    updateBadge();
+    return doTranslate();
+  },
+  state: state,
+  engine: translateText
+};
+})();
+</script>
+</body>
+</html>
