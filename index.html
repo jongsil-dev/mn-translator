@@ -1918,6 +1918,7 @@ window.__mnTest = {
   speakMn: speakMn,
   speakKo: speakKo,
   sampleKey: cyrKey,
+  sampleState: function(){ return sampleAudio ? { src: sampleAudio.src, paused: sampleAudio.paused, t: sampleAudio.currentTime } : null; },
   samples: MN_SAMPLES,
   translate: function(text, dir){
     el.src.value = text;
