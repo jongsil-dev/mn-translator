@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>한·몽 번역기</title>
 <meta name="description" content="한국어 ↔ 몽골어 무료 번역기. 몽골어 영어발음(채팅 줄임말)을 키릴 문자로 자동 복원해 번역합니다.">
+<meta name="app-version" content="2026-11-23 native-audio">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -284,6 +285,26 @@
     box-shadow:0 8px 24px rgba(0,0,0,.35);
   }
   .toast.show{opacity:1;transform:translate(-50%,0)}
+  /* 원어민 발음 샘플 */
+  .native-note{margin:-2px 0 10px;font-size:11.5px;color:var(--muted);line-height:1.55}
+  .native-list{display:flex;flex-direction:column;gap:7px}
+  .native-row{
+    display:flex;align-items:center;gap:10px;border:1px solid var(--line);background:var(--card2);
+    border-radius:12px;padding:9px 11px;cursor:pointer;text-align:left;font:inherit;color:var(--text);
+    transition:background .15s,border-color .15s;
+  }
+  .native-row:active{transform:scale(.99)}
+  .native-row .play{
+    flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;
+    display:grid;place-items:center;
+  }
+  .native-row .play svg{width:12px;height:12px;fill:currentColor;stroke:none}
+  .native-row .txt{flex:1;min-width:0}
+  .native-row .ko{display:block;font-size:11.5px;font-weight:800;color:var(--muted);letter-spacing:-.1px}
+  .native-row .cyr{display:block;font-size:14.5px;font-weight:700;line-height:1.35;margin-top:1px;word-break:break-word;letter-spacing:-.2px}
+  .native-row.on{border-color:rgba(37,99,235,.45);background:var(--primary-soft)}
+  .native-row.on .play{background:var(--primary)}
+  .native-tip{margin:9px 0 0;font-size:11px;color:var(--muted);line-height:1.5}
   footer{margin-top:2px;text-align:center;font-size:10.5px;color:var(--muted);line-height:1.6;padding-bottom:4px}
   .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 </style>
@@ -375,8 +396,19 @@
     <ul class="hist" id="histList"></ul>
   </section>
 
+  <!-- 원어민 발음 (미리 담아 둔 실제 몽골어 음성) -->
+  <section class="card" id="nativeCard">
+    <div class="card-head">
+      <span class="card-label">🎧 몽골어 원어민 발음</span>
+      <span class="badge"><span class="dot"></span><span>실제 음성</span></span>
+    </div>
+    <p class="native-note">몽골어 원어민 목소리로 미리 담아 둔 발음입니다. 눌러서 바로 들어 보세요.</p>
+    <div class="native-list" id="nativeList"></div>
+    <p class="native-tip">직접 입력한 아무 문장이나 듣기: 기기에 몽골어 음성이 있으면 그 음성으로, 없으면 러시아어 음성으로 키릴 글자를 읽어 드려요(근사 발음).</p>
+  </section>
+
   <footer>
-    무료 번역 엔진 · API 키 없이 동작<br>입력한 문장은 번역 서버로 전송, 최근 기록은 이 기기에만 저장
+    무료 번역 엔진 · API 키 없이 동작<br>입력한 문장은 번역 서버로 전송, 최근 기록은 이 기기에만 저장<br>🎧 원어민 발음은 실제 몽골어 신경망 음성을 미리 담아 둔 것
   </footer>
 </div>
 
@@ -1278,6 +1310,7 @@ var el = {
   pron: $('pronBlock'), warn: $('warnBox'), engineText: $('engineText'),
   chipsKo: $('chipsKo'), chipsMn: $('chipsMn'), chipsPron: $('chipsPron'),
   histCard: $('historyCard'), histList: $('histList'),
+  nativeList: $('nativeList'),
   overlay: $('overlay'), sheet: $('settingsSheet'),
   geminiKey: $('geminiKey'), aiToggle: $('aiToggle'), themeSelect: $('themeSelect'), engineSelect: $('engineSelect'),
   toast: $('toast')
@@ -1569,23 +1602,133 @@ function buildChips(){
 }
 
 /* 음성 */
-function speak(text, lang){
-  if (!text) return;
+var VOICE_CACHE = [];
+function refreshVoices(){
+  try { VOICE_CACHE = window.speechSynthesis.getVoices() || []; } catch(e){ VOICE_CACHE = []; }
+  return VOICE_CACHE;
+}
+if ('speechSynthesis' in window){
+  refreshVoices();
+  try { window.speechSynthesis.onvoiceschanged = refreshVoices; } catch(e){}
+}
+function findVoice(prefix){
+  if (!VOICE_CACHE.length) refreshVoices();
+  for (var i = 0; i < VOICE_CACHE.length; i++){
+    var l = (VOICE_CACHE[i].lang || '').toLowerCase().replace('_','-');
+    if (l.indexOf(prefix) === 0) return VOICE_CACHE[i];
+  }
+  return null;
+}
+function utter(text, lang, voice){
+  if (!text) return false;
   if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined'){
     toast('이 브라우저는 음성 듣기를 지원하지 않아요');
-    return;
+    return false;
   }
   try {
     var u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
     u.rate = 0.95;
-    var voices = window.speechSynthesis.getVoices() || [];
-    var v = voices.filter(function(x){ return (x.lang || '').toLowerCase().indexOf(lang.slice(0,2)) === 0; })[0];
-    if (v) u.voice = v;
+    if (voice){ try { u.voice = voice; } catch(e){} }
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(u);
-    if (!v && lang.indexOf('mn') === 0) toast('기기에 몽골어 음성이 없어 기본 음성으로 읽어요');
+    return true;
+  } catch(e){ toast('음성을 재생할 수 없어요'); return false; }
+}
+
+/* 미리 담아 둔 몽골어 원어민 음성 */
+var MN_SAMPLES = [
+  ['01','Сайн байна уу?','안녕하세요'],
+  ['02','Баярлалаа.','고마워요'],
+  ['03','Би чамд хайртай.','사랑해요'],
+  ['04','Энэ хэд вэ?','얼마예요?'],
+  ['05','Зүгээр ээ.','괜찮아요'],
+  ['06','Маргааш уулзацгаая.','내일 만나요'],
+  ['07','Ариун цэврийн өрөө хаана байдаг вэ?','화장실이 어디예요?'],
+  ['08','Гэрээгээ илгээнэ үү.','계약서를 보내 주세요'],
+  ['09','Уучлаарай.','죄송합니다'],
+  ['10','Аажуухан хэлнэ үү.','천천히 말해 주세요'],
+  ['11','Дахин хэлнэ үү.','다시 한 번 말해 주세요'],
+  ['12','Ус авч болох уу?','물 주세요']
+];
+var SAMPLE_BY_KEY = {};
+function cyrKey(s){
+  return String(s || '').toLowerCase()
+    .replace(/[?!.,·…"'()«»–—]/g, '')
+    .replace(/\s+/g, ' ').trim();
+}
+MN_SAMPLES.forEach(function(p){ SAMPLE_BY_KEY[cyrKey(p[1])] = p[0]; });
+
+var sampleAudio = null, sampleRow = null;
+function stopSample(){
+  if (sampleAudio){ try { sampleAudio.pause(); } catch(e){} }
+  if (sampleRow) sampleRow.classList.remove('on');
+  sampleRow = null;
+}
+function playNativeFile(num, row){
+  try {
+    if (sampleRow && sampleRow === row && sampleAudio && !sampleAudio.paused){ stopSample(); return; }
+    stopSample();
+    if (!sampleAudio){
+      sampleAudio = new Audio();
+      sampleAudio.preload = 'auto';
+      sampleAudio.addEventListener('ended', stopSample);
+      sampleAudio.addEventListener('error', function(){ toast('음성을 불러오지 못했어요'); stopSample(); });
+    }
+    sampleAudio.src = 'audio/' + num + '.mp3';
+    sampleRow = row || null;
+    if (sampleRow) sampleRow.classList.add('on');
+    var p = sampleAudio.play();
+    if (p && p.catch) p.catch(function(){ toast('음성을 불러오지 못했어요'); stopSample(); });
   } catch(e){ toast('음성을 재생할 수 없어요'); }
+}
+function buildNativeList(){
+  if (!el.nativeList) return;
+  el.nativeList.innerHTML = '';
+  MN_SAMPLES.forEach(function(p){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'native-row';
+    b.setAttribute('aria-label', p[2] + ' 몽골어 발음 듣기');
+    b.innerHTML = '<span class="play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>' +
+      '<span class="txt"><span class="ko"></span><span class="cyr"></span></span>';
+    b.querySelector('.ko').textContent = p[2];
+    b.querySelector('.cyr').textContent = p[1];
+    b.addEventListener('click', function(){ playNativeFile(p[0], b); });
+    el.nativeList.appendChild(b);
+  });
+}
+
+/* 러시아어 음성용 표기 보정 (ө·ү) */
+function forRussianVoice(cyr){
+  return String(cyr).replace(/ө/g, 'о').replace(/Ө/g, 'О').replace(/ү/g, 'у').replace(/Ү/g, 'У');
+}
+
+/* 한국어 듣기 */
+function speakKo(text){
+  if (!text) return;
+  utter(text, 'ko-KR', findVoice('ko'));
+}
+
+/* 몽골어 듣기: 내장 몽골어 음성 → (샘플) 원어민 녹음 → 러시아어 음성 → 한국어 음성 */
+function speakMn(cyr, retried){
+  if (!cyr) return;
+  var key = cyrKey(cyr);
+  if (SAMPLE_BY_KEY[key]){ playNativeFile(SAMPLE_BY_KEY[key], null); return; }
+  if (!('speechSynthesis' in window)){ toast('이 브라우저는 음성 듣기를 지원하지 않아요'); return; }
+  if (!VOICE_CACHE.length) refreshVoices();
+  if (!VOICE_CACHE.length && !retried){ setTimeout(function(){ speakMn(cyr, true); }, 700); return; }
+
+  var mn = findVoice('mn');
+  if (mn){ utter(cyr, 'mn-MN', mn); return; }
+
+  var ru = findVoice('ru');
+  if (ru){
+    if (utter(forRussianVoice(cyr), 'ru-RU', ru)) toast('기기에 몽골어 음성이 없어 러시아어 음성으로 읽어요');
+    return;
+  }
+
+  if (utter(cyrToHangul(cyr), 'ko-KR', findVoice('ko'))) toast('한글 근사 발음으로 읽어요');
 }
 
 /* 설정 */
@@ -1662,7 +1805,8 @@ function bind(){
     var t = el.src.value.trim();
     if (!t) return;
     var d = detectLang(t);
-    speak(d === 'ko' ? t : (d === 'mn-cyr' ? t : romanToCyrillic(t)), d === 'ko' ? 'ko-KR' : 'mn-MN');
+    if (d === 'ko') speakKo(t);
+    else speakMn(d === 'mn-cyr' ? t : romanToCyrillic(t));
   });
   el.swap.addEventListener('click', function(){
     var t = el.src.value.trim();
@@ -1677,8 +1821,8 @@ function bind(){
 
   $('btnSpeakResult').addEventListener('click', function(){
     if (!state.last) return;
-    if (state.last.mode === 'mn2ko') speak(state.last.ko, 'ko-KR');
-    else speak(state.last.mn, 'mn-MN');
+    if (state.last.mode === 'mn2ko') speakKo(state.last.ko);
+    else speakMn(state.last.mn);
   });
   $('btnCopyTop').addEventListener('click', function(){
     if (!state.last) return;
@@ -1758,6 +1902,7 @@ function bind(){
 initTheme();
 setupPWA();
 buildChips();
+buildNativeList();
 bind();
 updateBadge();
 renderHistory();
@@ -1770,6 +1915,10 @@ window.__mnTest = {
   latin: cyrToLatin,
   latinChat: cyrToLatinChat,
   pron: hangulPronKey,
+  speakMn: speakMn,
+  speakKo: speakKo,
+  sampleKey: cyrKey,
+  samples: MN_SAMPLES,
   translate: function(text, dir){
     el.src.value = text;
     state.dir = dir || 'auto';
